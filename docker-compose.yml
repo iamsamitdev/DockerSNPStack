@@ -1,0 +1,57 @@
+# กำหนด network
+networks:
+  snp_network:
+    name: snp_network
+    driver: bridge
+
+# กำหนด service
+services:
+  postgresdb:
+    image: postgres:15
+    container_name: postgresdb
+    volumes:
+      - ./postgresdb:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: springdb
+    ports:
+      - "6432:5432"
+    restart: always
+    networks:
+      - snp_network
+  springbootapp:
+    # image: springbootapp
+    container_name: springbootapp
+    volumes:
+      - ./springboot:/.springboot/app
+    build:
+      context: ./springboot
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+    ports:
+      - "9090:8080"
+    restart: always
+    depends_on:
+      - postgresdb
+    networks:
+      - snp_network
+  nuxtapp:
+    image: nuxtapp
+    container_name: nuxtapp
+    volumes:
+      - ./nuxt:/.nuxt/app
+      - /app/node_modules
+    build:
+      context: ./nuxt
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - "3000:3000"
+    depends_on:
+      - springbootapp
+    restart: always
+    networks:
+      - snp_network
