@@ -7,10 +7,14 @@ networks:
 # กำหนด service
 services:
   postgresdb:
-    image: postgres:15
+    # image: postgresdb:1.0
+    image: iamsamitdev/postgresdb:1.0
     container_name: postgresdb
     volumes:
-      - ./postgresdb:/var/lib/postgresql/data
+      - ./postgresdb/pgdb:/var/lib/postgresql/data
+    build:
+      context: ./postgresdb
+      dockerfile: Dockerfile
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123456
@@ -21,7 +25,8 @@ services:
     networks:
       - snp_network
   springbootapp:
-    # image: springbootapp
+    # image: springbootapp:1.0
+    image: iamsamitdev/springbootapp:1.0
     container_name: springbootapp
     volumes:
       - ./springboot:/.springboot/app
@@ -38,7 +43,8 @@ services:
     networks:
       - snp_network
   nuxtapp:
-    image: nuxtapp
+    # image: nuxtapp:1.0
+    image: iamsamitdev/nuxtapp:1.0
     container_name: nuxtapp
     volumes:
       - ./nuxt:/.nuxt/app
